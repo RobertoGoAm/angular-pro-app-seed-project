@@ -1,0 +1,8 @@
+[user]
+	name = Roberto Gomez
+	email = RobertoGo@protonmail.com
+[credential]
+	helper = !/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/bin/java -Ddebug=false -Djava.net.useSystemProxies=true -jar /usr/local/Cellar/git-credential-manager/2.0.4/libexec/git-credential-manager-2.0.4.jar
+[core]
+	quotepath = false
+	commentchar = *

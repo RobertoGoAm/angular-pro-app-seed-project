@@ -1,0 +1,12 @@
+--ignore-dir=log
+--ignore-dir=.git
+--ignore-dir=node_modules
+--ignore-dir=platforms
+--ignore-dir=plugins
+--ignore-dir=www
+--ignore-dir=tmp
+--ignore-dir=vendor
+--ignore-dir=.idea
+--ignore-dir=.vscode
+--ignore-dir=nbproject
+--sort-files

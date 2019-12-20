@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =2
+let g:netrw_dirhist_2='/'
+let g:netrw_dirhist_1='/Users/roberto'
+let g:netrw_dirhist_0='/Users/roberto/Dev/Laravel/laravel6'
+let g:netrw_dirhist_9='/Users/roberto'
+let g:netrw_dirhist_8='/Users/roberto/Proyectos'
+let g:netrw_dirhist_7='/Users/roberto/Proyectos/Clase'
+let g:netrw_dirhist_6='/Users/roberto/Proyectos/Clase/Proyecto Final - Roberto Gómez Amores'
+let g:netrw_dirhist_5='/Users/roberto/Proyectos/Clase/Proyecto Final - Roberto Gómez Amores/API REST'
+let g:netrw_dirhist_4='/Users/roberto/Proyectos/Clase/Proyecto Final - Roberto Gómez Amores/API REST/test'
+let g:netrw_dirhist_3='/Users/roberto/Proyectos/Clase/Proyecto Final - Roberto Gómez Amores/API REST/test/exampleApiMongodb'

@@ -1,0 +1,9 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =7
+let g:netrw_dirhist_7='/Users/roberto/Dev/parenthub/ph_parent'
+let g:netrw_dirhist_6='/Users/roberto/.config/nvim'
+let g:netrw_dirhist_5='/Users/roberto/.config'
+let g:netrw_dirhist_4='/Users/roberto/.config/coc'
+let g:netrw_dirhist_3='/Users/roberto/.config'
+let g:netrw_dirhist_2='/Users/roberto/Dev/parenthub/ph_parent/src/app/pages/channel'
+let g:netrw_dirhist_1='/Users/roberto/Dev/parenthub/ph_parent/src/app/pages/todo'
