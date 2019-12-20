@@ -1,0 +1,256 @@
+;; / / __ Package Source __ / /
+
+;;; Package configs
+(require 'package)
+(setq package-enable-at-startup nil)
+(setq package-archives '(("org"   . "http://orgmode.org/elpa/")
+                         ("gnu"   . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
+(package-initialize)
+
+
+;; / / __ General __ / /
+
+;;; Disable error bell
+(setq ring-bell-function 'ignore)
+
+;;; Make the yes or no prompts shorter.
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;;; Move filename# files
+(setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
+  backup-by-copying t    ; Don't delink hardlinks
+  version-control t      ; Use version numbers on backups
+  delete-old-versions t  ; Automatically delete excess backups
+  kept-new-versions 20   ; how many of the newest versions to keep
+  kept-old-versions 5    ; and how many of the old
+  )
+
+;;; Delete trailing whitespace on save
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+
+;; / / __ Appareance __ / /
+
+;;; No startup screen
+(setq inhibit-startup-screen t)
+
+;;; Font settings
+(set-frame-font "DroidSansMono Nerd Font 18")
+
+;;; Theme
+(use-package base16-theme
+  :ensure t
+  :config
+  (setq base16-distinct-fringe-background nil)
+  (load-theme 'base16-material-palenight t))
+
+;;; Minimal UI
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(menu-bar-mode -1)
+(set-face-attribute 'fringe nil :background nil)
+
+;;; Fancy titlebar for MacOS
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+(setq ns-use-proxy-icon  nil)
+(setq frame-title-format nil)
+
+;;; Line Number
+(global-linum-mode t)
+(setq linum-format "%4d  ")
+
+;;; Line height
+(defun set-bigger-spacing ()
+  (setq-local default-text-properties '(line-spacing 0.25 line-height 0.5)))
+(add-hook 'text-mode-hook 'set-bigger-spacing)
+(add-hook 'prog-mode-hook 'set-bigger-spacing)
+
+
+;; / / __ Keybinds __ / /
+
+;;; Custom keybinding
+(use-package general
+  :ensure t
+  :config (general-define-key
+  :states '(normal visual insert emacs)
+  :prefix "SPC"
+  :non-normal-prefix "M-SPC"
+
+  ;;;; File
+  "f" '(:ignore t :which-key "File")
+  "fs" '(save-buffer :which-key "Save")
+  "ft" '(neotree-toggle :which-key "Toggle NeoTree")
+
+  ;;;;; Emacs
+  "fe" '(:ignore t :which-key "Emacs")
+    "fed" '(find-dotfile :which-key "Edit init.el")
+    "fer" '(reload-init-file :which-key "Reload init.el")
+
+  ;;;; "/"   '(counsel-rg :which-key "ripgrep") ; You'll need counsel package for this
+  "TAB" '(switch-to-prev-buffer :which-key "Previous buffer")
+  "SPC" '(helm-M-x :which-key "M-x")
+
+  ;;;; Buffers
+  "b" '(:ignore t :which-key "Buffer")
+  "bb" '(helm-buffers-list :which-key "List")
+
+  ;;;; Project
+  "p" '(:ignore t :which-key "Project")
+  "pf" '(helm-find-file :which-key "Find files")
+
+  ;;;; Quit
+  "q" '(:ignore t :which-key "Quit")
+  "qq" '(evil-quit :which-key "Quit emacs")
+
+  ;;;; Window
+  "w" '(:ignore t :which-key "Window")
+  "wl" '(windmove-right :which-key "Move right")
+  "wh" '(windmove-left :which-key "Move left")
+  "wk" '(windmove-up :which-key "Move up")
+  "wj" '(windmove-down :which-key "Move bottom")
+  "w/" '(split-window-right :which-key "Split right")
+  "w-" '(split-window-below :which-key "Split bottom")
+  "wq" '(delete-window :which-key "Delete window")
+
+  ;;;; Others
+  "'" '(ansi-term :which-key "Open terminal")))
+
+
+;; / / __ Plugin Config __ / /
+
+;;; Bootstrap `use-package`
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+
+;;; Vim mode
+(use-package evil
+  :ensure t
+  :config
+  (evil-mode 1))
+
+;;; Helm
+(use-package helm
+  :ensure t
+  :init
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-completion-in-region-fuzzy-match t)
+
+;;; Which Key
+(use-package which-key
+  :ensure t
+  :init
+  (setq which-key-separator " ")
+  (setq which-key-prefix-prefix "+")
+  :config
+  (which-key-mode)) (setq helm-candidate-number-list 50))
+
+;;; Doom modeline
+(use-package doom-modeline
+   :ensure t
+   :init
+   (setq doom-modeline-vcs-max-length 170)
+   :hook (after-init . doom-modeline-mode))
+
+;;; Tide
+(defun setup-tide-mode ()
+  "Setup function for tide."
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  (company-mode +1))
+
+(setq company-tooltip-align-annotations t)
+
+(add-hook 'js-mode-hook 'prettier-js-mode)
+(add-hook 'js-mode-hook #'setup-tide-mode)
+
+;;; Flycheck
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+;;; Company
+(use-package company
+  :ensure t
+  :defer t
+  :init (global-company-mode)
+  :config
+  (progn
+    ;; Use Company for completion
+    (bind-key [remap completion-at-point] #'company-complete company-mode-map)
+
+    (setq company-tooltip-align-annotations t
+          ;; Easy navigation to candidates with M-<n>
+          company-show-numbers t)
+    (setq company-dabbrev-downcase nil))
+  :diminish company-mode)
+
+;;; Avy
+(use-package avy
+    :ensure t)
+
+;;; NeoTree
+(use-package neotree
+  :ensure t
+)
+(setq neo-smart-open t)
+
+;;; Smartparens
+(use-package smartparens
+    :ensure t
+    :diminish smartparens-mode
+    :config
+    (add-hook 'prog-mode-hook 'smartparens-mode))
+
+;;; Rainbow-delimiters
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+
+;;; rainbow-mode
+(use-package rainbow-mode
+  :ensure t
+  :config
+  (setq rainbow-x-colors nil)
+  (add-hook 'prog-mode-hook 'rainbow-mode))
+
+;;; aggresive-indent
+  (use-package aggressive-indent
+      :ensure t)
+
+
+;; / / __ Functions __ / /
+
+;;; Find init.el
+(defun find-dotfile ()
+  "Edit the `dotfile', in the current window."
+  (interactive)
+  (find-file-existing (concat user-emacs-directory "init.el")))
+
+;;; Reload init.el
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (neotree doom-modeline which-key use-package spaceline helm general evil base16-theme))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

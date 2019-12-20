@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Public Method
+# key: met
+# --
+
+public function $1() {
+    $2
+}

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Class
+# key: class
+# --
+class `(upcase (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))` {
+
+}

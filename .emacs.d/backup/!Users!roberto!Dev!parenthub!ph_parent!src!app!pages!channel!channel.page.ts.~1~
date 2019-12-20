@@ -1,0 +1,377 @@
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import {
+  AlertController,
+  IonContent,
+  IonInfiniteScroll,
+  NavController,
+  Platform
+} from '@ionic/angular';
+import { Actions, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { combineLatest, Subject, Subscription, timer } from 'rxjs';
+import { first, take, takeUntil, tap } from 'rxjs/operators';
+import { InViewportDirective } from 'src/app/components/in-viewport.directive';
+import { Channel } from 'src/app/models/channel.model';
+import { ItemPageLoadingInfo } from 'src/app/store/reducers/core.reducer';
+import { ChannelArticleItemViewModel } from '../../models/item.model';
+import * as fromStore from '../../store';
+import { LoadNewItems, ShowFirstContentLoad } from '../../store';
+
+export interface PageState {
+  showLoadingIndicator?: boolean;
+  channel?: Channel;
+  items?: ChannelArticleItemViewModel[];
+  hasMoreItems?: boolean;
+  firstLoadErrorType?: string;
+  emptyTemplate?: string;
+}
+
+@Component({
+  selector: 'app-channel',
+  templateUrl: './channel.page.html',
+  styleUrls: ['./channel.page.scss']
+})
+export class ChannelPage implements OnInit, OnDestroy {
+  pageIdPrefix = 'channel-';
+  pageId = '';
+  destroyed$: Subject<boolean>;
+  left$: Subject<boolean>;
+  @ViewChild(IonInfiniteScroll, { static: false })
+  infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonContent, { static: false }) content: IonContent;
+
+  pageStateData: PageState = {};
+  pageStateSubject = new Subject<PageState>();
+  pageState$ = this.pageStateSubject.asObservable();
+
+  loadingMore = false;
+  activeTab: string;
+  searchResult: boolean;
+  contentClass = '';
+  sub: Subscription;
+  constructor(
+    private alertCtrl: AlertController,
+    private actions$: Actions,
+    private store: Store<fromStore.AppState>,
+    private route: ActivatedRoute,
+    private navController: NavController,
+    private router: Router,
+    private platform: Platform
+  ) {
+    this.sub = this.platform.backButton.subscribeWithPriority(9999, () => {
+      document.addEventListener('backbutton', this.backButtonHandler, false);
+      this.goToParent();
+    });
+  }
+
+  private backButtonHandler(event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  get useScrollEvents() {
+    return !InViewportDirective.hasCompatibleBrowser();
+  }
+  private triggerStateChange(changes: PageState) {
+    this.pageStateData = { ...this.pageStateData, ...changes };
+    this.pageStateSubject.next(this.pageStateData);
+    this.contentClass = this.getCssClass();
+  }
+
+  ngOnInit(): void {
+    this.destroyed$ = new Subject<boolean>();
+
+    console.log('pagestatedata', this.pageStateData);
+
+    this.pageStateSubject.subscribe(data => console.log('pageStateSubject', data));
+
+    this.activeTab = this.router.url.split('/')[3];
+    this.searchResult = this.router.url.indexOf('search') !== -1;
+
+    this.route.data.subscribe((data: { channel: Channel }) => {
+      this.pageId = this.pageIdPrefix + data.channel.id;
+      this.triggerStateChange({ channel: data.channel });
+
+      combineLatest([
+        this.store.select(fromStore.getChannelViewModels(data.channel.id)),
+        this.store.select(fromStore.getPageState(this.pageId))
+      ])
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe(([items, pageState]) => {
+          const showFirstLoad = !pageState || (pageState && !pageState.loadingNew.queryTimestamp);
+          if (showFirstLoad && !this.pageStateData.emptyTemplate) {
+            this.monitorFirstLoadResult();
+            this.store.dispatch(new ShowFirstContentLoad({ page: 'channel feed' }));
+            this.triggerStateChange({ emptyTemplate: 'firstLoad' });
+            this.store.dispatch(
+              new LoadNewItems({
+                pageId: this.pageId,
+                channelId: this.pageStateData.channel.id,
+                presub: true,
+                showInFeed: true
+              })
+            );
+            return;
+          }
+          this.updateInfiniteScroll(pageState);
+
+          let foundPageItem = false;
+          const pageItems = [];
+          // Sort items oldest to newest
+          // only use items loaded through this page or newer than
+          // the first such item
+          items.sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+          items.forEach(element => {
+            if (element.showInFeed || element.pageSource.startsWith('channel')) {
+              pageItems.splice(0, 0, element);
+              foundPageItem = true;
+            } else {
+              if (foundPageItem) {
+                pageItems.splice(0, 0, element);
+              }
+            }
+          });
+	    console.log('asd');
+
+          this.triggerStateChange({
+            items: pageItems,
+            hasMoreItems: !pageState.loadingMore || pageState.loadingMore.hasMore
+          });
+        });
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.destroyed$) {
+      this.destroyed$.next(true);
+      this.destroyed$.complete();
+    }
+    this.sub.unsubscribe();
+    document.removeEventListener('backbutton', this.backButtonHandler, false);
+  }
+
+  ionViewWillEnter() {
+    this.left$ = new Subject<boolean>();
+
+    console.log('channel-page ionViewWillEnter');
+
+    this.triggerStateChange({});
+
+    this.actions$
+      .pipe(
+        ofType<fromStore.ToggleItemDone>(fromStore.TOGGLE_ITEM_DONE_FAIL),
+        takeUntil(this.left$),
+        tap(action => {
+          this.showItemDoneError(action.payload.id);
+        })
+      )
+      .subscribe();
+  }
+
+  private updateInfiniteScroll(pageState: ItemPageLoadingInfo) {
+    if (
+      this.infiniteScroll &&
+      this.loadingMore &&
+      pageState.loadingMore &&
+      !pageState.loadingMore.inProgress
+    ) {
+      timer(1000, 0)
+        .pipe(take(1))
+        .subscribe(() => {
+          this.infiniteScroll.complete();
+        });
+    }
+  }
+
+  ionViewWillLeave() {
+    if (this.left$) {
+      this.left$.next(true);
+      this.left$.complete();
+    }
+  }
+
+  private getCssClass() {
+    if (
+      this.pageStateData.items &&
+      this.pageStateData.items.length === 0 &&
+      this.pageStateData.emptyTemplate !== 'firstLoadError' &&
+      this.pageStateData.emptyTemplate !== 'firstLoad'
+    ) {
+      return 'itemsCleared';
+    } else if (
+      this.pageStateData.items &&
+      this.pageStateData.items.length > 0 &&
+      !this.pageStateData.emptyTemplate &&
+      !this.pageStateData.firstLoadErrorType
+    ) {
+      return 'itemsFound';
+    }
+  }
+
+  private showItemDoneError(id: number) {
+    const alert = this.alertCtrl.create({
+      header: 'Oops!',
+      subHeader: 'Something went wrong. Please try again or come back later',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Retry',
+          handler: () => {
+            this.toggleItemDone(id);
+          }
+        }
+      ]
+    });
+    alert.then(a => a.present());
+  }
+
+  private loadItemsResultSub() {
+    this.actions$
+      .pipe(
+        first(
+          action =>
+            action.type === fromStore.LOAD_ITEMS_SUCCESS ||
+            action.type === fromStore.LOAD_ITEMS_FAIL
+        )
+      )
+      .subscribe(() => {
+        this.triggerStateChange({ emptyTemplate: null });
+      });
+  }
+
+  // When this tab is selected
+  ionSelected() {
+    this.content.scrollToTop(); // 300ms
+  }
+
+  goToParent() {
+    this.navController.navigateBack(['../../'], { relativeTo: this.route });
+  }
+
+  showItem(id) {
+    const navigationExtras: NavigationExtras = {
+      relativeTo: this.route,
+      queryParams: {
+        disableGoTo: true,
+        navFromFeed: true
+      }
+    };
+
+    if (this.router.url.indexOf('my-channels') !== -1 && this.searchResult) {
+      this.navController.navigateForward([`${id}`], navigationExtras);
+    } else {
+      this.navController.navigateForward([`../../${id}`], navigationExtras);
+    }
+  }
+
+  toggleItemDone(id) {
+    this.store.dispatch(new fromStore.ToggleItemDone({ id }));
+  }
+
+  shareItem(id) {
+    // Deselect the button
+    (document.activeElement as HTMLElement).blur();
+
+    this.store.dispatch(new fromStore.ShareItem({ id }));
+  }
+  saveCalendar(event: CustomEvent) {
+    this.store.dispatch(
+      new fromStore.SaveCalendarEvent({
+        event: event.detail
+      })
+    );
+  }
+  itemRead(id) {
+    this.store.dispatch(new fromStore.QueueItemReadReceipt({ id }));
+  }
+  showItemSearch() {
+    const navigationExtras: NavigationExtras = {
+      relativeTo: this.route,
+      queryParams: {
+        channelId: this.pageStateData.channel.id
+      }
+    };
+
+    this.navController.navigateForward(['search'], navigationExtras);
+  }
+
+  openAttachment(attachmentId) {
+    this.store.dispatch(new fromStore.OpenAttachment({ id: attachmentId }));
+  }
+
+  getThumb(attachmentId) {
+    this.store.dispatch(new fromStore.DownloadAttachmentImage({ id: attachmentId, thumb: true }));
+  }
+
+  doInfinite() {
+    this.loadingMore = true;
+    this.loadItemsResultSub();
+
+    this.store.dispatch(
+      new fromStore.LoadMoreItems({
+        pageId: this.pageId,
+        channelId: this.pageStateData.channel.id,
+        presub: true,
+        maxId: this.pageStateData.items
+          ? this.pageStateData.items[this.pageStateData.items.length - 1].sequenceNumber
+          : null,
+        showInFeed: true
+      })
+    );
+  }
+
+  retryFirstLoad() {
+    this.triggerStateChange({ emptyTemplate: null });
+
+    this.store.dispatch(new ShowFirstContentLoad({ page: 'channel feed' }));
+
+    this.store.dispatch(
+      new LoadNewItems({
+        pageId: this.pageId,
+        channelId: this.pageStateData.channel.id,
+        presub: true,
+        showInFeed: true
+      })
+    );
+
+    this.monitorFirstLoadResult();
+  }
+
+  private monitorFirstLoadResult() {
+    this.actions$
+      .pipe(first(action => action.type === fromStore.HIDE_FIRST_CONTENT_LOAD))
+      .subscribe(action => {
+        const payload = (action as fromStore.HideFirstContentLoad).payload;
+        const changes: any = {};
+        if (payload.showError) {
+          changes.emptyTemplate = 'firstLoadError';
+
+          if (payload.noInternet === true) {
+            changes.firstLoadErrorType = 'noInternet';
+          } else {
+            changes.firstLoadErrorType = 'somethingWrong';
+          }
+        } else {
+          changes.emptyTemplate = null;
+          changes.firstLoadErrorType = null;
+        }
+        this.triggerStateChange(changes);
+      });
+  }
+
+  navigateTo(url: string, setRoot: boolean) {
+    this.store.dispatch(
+      new fromStore.NavigateTo({
+        page: url,
+        setRoot
+      })
+    );
+  }
+}

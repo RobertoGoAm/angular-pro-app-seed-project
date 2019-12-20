@@ -1,0 +1,60 @@
+#!/usr/bin/env sh
+
+# bar settings
+yabai -m config status_bar                   off
+
+# global settings
+yabai -m config mouse_follows_focus          off
+yabai -m config focus_follows_mouse          off
+yabai -m config window_placement             first_child
+yabai -m config window_topmost               off
+yabai -m config window_opacity               off
+yabai -m config window_opacity_duration      0.0
+yabai -m config window_shadow                on
+yabai -m config window_border                off
+yabai -m config window_border_placement      inset
+yabai -m config window_border_width          4
+yabai -m config window_border_radius         -1.0
+yabai -m config active_window_border_topmost off
+yabai -m config active_window_border_color   0xff775759
+yabai -m config normal_window_border_color   0xff505050
+yabai -m config insert_window_border_color   0xffd75f5f
+yabai -m config active_window_opacity        1.0
+yabai -m config normal_window_opacity        0.90
+yabai -m config split_ratio                  0.50
+yabai -m config auto_balance                 off
+yabai -m config mouse_modifier               fn
+yabai -m config mouse_action1                move
+yabai -m config mouse_action2                resize
+
+# general space settings
+yabai -m config layout                       bsp
+yabai -m config top_padding                  10
+yabai -m config bottom_padding               10
+yabai -m config left_padding                 10
+yabai -m config right_padding                10
+yabai -m config window_gap                   10
+
+# signal
+yabai -m signal --add \
+    event=window_focused \
+    app='^Microsoft Teams$' \
+    title='^Microsoft Teams Notification$' \
+    action='yabai -m window --focus south > /dev/null 2>&1'
+
+# rules
+yabai -m rule --add app="Finder" manage=off # Float Finder
+yabai -m rule --add app="iTerm2" manage=off # Float iTerm2
+yabai -m rule --add app="Activity Monitor" manage=off # Float Activity Monitor
+yabai -m rule --add app="System Preferences" manage=off # Float System Preferences
+yabai -m rule --add app="Bitwarden" manage=off # Float Bitwarden
+yabai -m rule --add app="WeChat" manage=off # Float WeChat
+yabai -m rule --add app="TextEdit" manage=off # Float TextEdit
+yabai -m rule --add app="Surfshark" manage=off # Float Surfshark
+yabai -m rule --add app="Tor Browser" manage=off # Float Tor Browser
+yabai -m rule --add app="Terminal" manage=off # Float Terminal
+yabai -m rule --add app="App Store" manage=off # Float App Store
+yabai -m rule --add app="Anki" manage=off # Float Anki
+yabai -m rule --add app="WebTorrent" manage=off # Float WebTorrent
+yabai -m rule --add app="Simulator" manage=off # Float Simulator
+yabai -m rule --add app="Emacs" manage=on # Dont float emacs

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Class
+# key: class
+# --
+
+class `(capitalize (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))` {
+
+}

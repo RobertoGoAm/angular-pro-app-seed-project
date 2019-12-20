@@ -1,0 +1,355 @@
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, NavigationExtras } from '@angular/router';
+import {
+  AlertController,
+  IonContent,
+  IonInfiniteScroll,
+  NavController,
+  Platform,
+  ToastController
+} from '@ionic/angular';
+import { Actions, ofType } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { combineLatest, Subject, Subscription, timer } from 'rxjs';
+import { first, take, takeUntil, tap } from 'rxjs/operators';
+import { InViewportDirective } from 'src/app/components/in-viewport.directive';
+import { Student } from 'src/app/models/student.model';
+import { ItemPageLoadingInfo } from 'src/app/store/reducers/core.reducer';
+import { ItemViewModel } from '../../models/item.model';
+import * as fromStore from '../../store';
+import { LoadNewItems, ShowFirstContentLoad } from '../../store';
+
+export interface PageState {
+  showLoadingIndicator?: boolean;
+  student?: Student;
+  items?: ItemViewModel[];
+  hasMoreItems?: boolean;
+  firstLoadErrorType?: string;
+  emptyTemplate?: string;
+}
+
+@Component({
+  selector: 'app-unread',
+  templateUrl: './unread.page.html',
+  styleUrls: ['./unread.page.scss']
+})
+export class UnreadPage implements OnInit, OnDestroy {
+  pageId = 'unread-items';
+  destroyed$: Subject<boolean>;
+  left$: Subject<boolean>;
+  @ViewChild(IonInfiniteScroll, { static: false })
+  infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonContent, { static: false }) content: IonContent;
+
+  pageStateData: PageState = {};
+  pageStateSubject = new Subject<PageState>();
+  pageState$ = this.pageStateSubject.asObservable();
+
+  loadingMore = false;
+  contentClass = '';
+  sub: Subscription;
+
+  constructor(
+    private alertCtrl: AlertController,
+    private actions$: Actions,
+    private store: Store<fromStore.AppState>,
+    private navController: NavController,
+    private route: ActivatedRoute,
+    private toastController: ToastController,
+    private platform: Platform
+  ) {
+    this.sub = this.platform.backButton.subscribeWithPriority(9999, () => {
+      document.addEventListener('backbutton', this.backButtonHandler, false);
+      this.goToParent();
+    });
+  }
+
+  private triggerStateChange(changes: PageState) {
+    this.pageStateData = { ...this.pageStateData, ...changes };
+    this.pageStateSubject.next(this.pageStateData);
+    this.contentClass = this.getCssClass();
+  }
+  get useScrollEvents() {
+    return !InViewportDirective.hasCompatibleBrowser();
+  }
+  ngOnInit(): void {
+    this.destroyed$ = new Subject<boolean>();
+
+    combineLatest([
+      this.store.select(fromStore.getUnreadItemViewModels).pipe(first()),
+      this.store.select(fromStore.getPageState(this.pageId))
+    ])
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(([items, pageState]) => {
+        const showFirstLoad = !pageState || (pageState && !pageState.loadingNew.queryTimestamp);
+        if (showFirstLoad && !this.pageStateData.emptyTemplate) {
+          this.monitorFirstLoadResult();
+          this.store.dispatch(new ShowFirstContentLoad({ page: 'unread items' }));
+          this.triggerStateChange({ emptyTemplate: 'firstLoad' });
+          this.store.dispatch(
+            new LoadNewItems({
+              pageId: this.pageId,
+              unread: true
+            })
+          );
+          return;
+        }
+        this.updateInfiniteScroll(pageState);
+
+        this.triggerStateChange({
+          items,
+          hasMoreItems: !pageState.loadingMore || pageState.loadingMore.hasMore
+        });
+      });
+  }
+
+  private backButtonHandler(event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  ngOnDestroy() {
+    if (this.destroyed$) {
+      this.destroyed$.next(true);
+      this.destroyed$.complete();
+    }
+
+    this.sub.unsubscribe();
+    document.removeEventListener('backbutton', this.backButtonHandler, false);
+  }
+
+  ionViewWillEnter() {
+    this.left$ = new Subject<boolean>();
+
+    console.log('unread ionViewWillEnter');
+
+    this.triggerStateChange({});
+
+    this.actions$
+      .pipe(
+        ofType<fromStore.ToggleItemDone>(fromStore.TOGGLE_ITEM_DONE_FAIL),
+        takeUntil(this.left$),
+        tap(action => {
+          this.showItemDoneError(action.payload.id);
+        })
+      )
+      .subscribe();
+  }
+
+  private updateInfiniteScroll(pageState: ItemPageLoadingInfo) {
+    if (
+      this.infiniteScroll &&
+      this.loadingMore &&
+      pageState.loadingMore &&
+      !pageState.loadingMore.inProgress
+    ) {
+      timer(1000, 0)
+        .pipe(take(1))
+        .subscribe(() => {
+          if (this.infiniteScroll) {
+            this.infiniteScroll.complete();
+          }
+        });
+    }
+  }
+
+  ionViewWillLeave() {
+    if (this.left$) {
+      this.left$.next(true);
+      this.left$.complete();
+    }
+  }
+
+  goToParent() {
+    this.navController.navigateBack(['../todo'], { relativeTo: this.route });
+  }
+
+  private getCssClass() {
+    if (
+      this.pageStateData.items &&
+      this.pageStateData.items.length === 0 &&
+      this.pageStateData.emptyTemplate !== 'firstLoadError' &&
+      this.pageStateData.emptyTemplate !== 'firstLoad'
+    ) {
+      return 'itemsCleared';
+    } else if (
+      this.pageStateData.items &&
+      this.pageStateData.items.length > 0 &&
+      !this.pageStateData.emptyTemplate &&
+      !this.pageStateData.firstLoadErrorType
+    ) {
+      return 'itemsFound';
+    }
+  }
+
+  private showItemDoneError(id: number) {
+    const alert = this.alertCtrl.create({
+      header: 'Oops!',
+      subHeader: 'Something went wrong. Please try again or come back later',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Retry',
+          handler: () => {
+            this.toggleItemDone(id);
+          }
+        }
+      ]
+    });
+    alert.then(a => a.present());
+  }
+
+  private loadItemsResultSub() {
+    this.actions$
+      .pipe(
+        first(
+          action =>
+            action.type === fromStore.LOAD_ITEMS_SUCCESS ||
+            action.type === fromStore.LOAD_ITEMS_FAIL
+        )
+      )
+      .subscribe(() => {
+        this.triggerStateChange({ emptyTemplate: null });
+      });
+  }
+
+  // When this tab is selected
+  ionSelected() {
+    this.content.scrollToTop(); // 300ms
+  }
+
+  showChannel(id) {
+    this.navController.navigateForward([`app/tabs/hub/unread/channel/${id}`]);
+  }
+
+  showStudent(studentData) {
+    const navigationExtras: NavigationExtras = {};
+
+    this.navController.navigateForward(
+      [`app/tabs/hub/unread/school/${studentData.schoolId}/student/${studentData.studentId}/dms`],
+      navigationExtras
+    );
+  }
+
+  showItem(urlFragment) {
+    const navigationExtras: NavigationExtras = {};
+
+    this.navController.navigateForward([`app/tabs/hub/unread/${urlFragment}`], navigationExtras);
+  }
+
+  toggleItemDone(id) {
+    this.store.dispatch(new fromStore.ToggleItemDone({ id }));
+
+    this.actions$
+      .pipe(
+        ofType<Action>(fromStore.TOGGLE_ITEM_DONE_SUCCESS, fromStore.TOGGLE_ITEM_DONE_FAIL),
+        first()
+      )
+      .subscribe(action => {
+        // Deselect the button
+        (document.activeElement as HTMLElement).blur();
+
+        if (action.type === fromStore.TOGGLE_ITEM_DONE_SUCCESS) {
+          const toast = this.toastController.create({
+            message: 'Message moved to The Hub',
+            duration: 3000,
+            position: 'top'
+          });
+          toast.then(t => t.present());
+        } else {
+          this.showItemDoneError((action as fromStore.ToggleItemDoneFail).payload.id);
+        }
+      });
+  }
+  shareItem(id) {
+    // Deselect the button
+    (document.activeElement as HTMLElement).blur();
+
+    this.store.dispatch(new fromStore.ShareItem({ id }));
+  }
+  saveCalendar(event: CustomEvent) {
+    this.store.dispatch(
+      new fromStore.SaveCalendarEvent({
+        event: event.detail
+      })
+    );
+  }
+  itemRead(id) {
+    this.store.dispatch(new fromStore.QueueItemReadReceipt({ id }));
+  }
+  showItemSearch() {
+    this.store.dispatch(new fromStore.NavigateTo({ page: 'Item Search' }));
+  }
+  openAttachment(attachmentId) {
+    this.store.dispatch(new fromStore.OpenAttachment({ id: attachmentId }));
+  }
+
+  getThumb(attachmentId) {
+    this.store.dispatch(new fromStore.DownloadAttachmentImage({ id: attachmentId, thumb: true }));
+  }
+
+  doInfinite() {
+    this.loadingMore = true;
+    this.loadItemsResultSub();
+
+    // This page may have gaps introduced by marking items as done
+    // so ensure we load more from the earliest item loaded through
+    // this page
+    const pageItems = this.pageStateData.items
+      ? this.pageStateData.items
+          .filter(a => a.pageSource === 'hub-todo')
+          .sort((a, b) => a.sequenceNumber - b.sequenceNumber)
+      : [];
+    const maxId = pageItems.length > 0 ? pageItems[0].sequenceNumber : null;
+    this.store.dispatch(
+      new fromStore.LoadMoreItems({
+        pageId: this.pageId,
+        unread: true,
+        maxId
+      })
+    );
+  }
+
+  retryFirstLoad() {
+    this.triggerStateChange({ emptyTemplate: null });
+
+    this.store.dispatch(new ShowFirstContentLoad({ page: 'unread items' }));
+
+    this.store.dispatch(
+      new LoadNewItems({
+        pageId: this.pageId,
+        unread: true
+      })
+    );
+
+    this.monitorFirstLoadResult();
+  }
+
+  private monitorFirstLoadResult() {
+    this.actions$
+      .pipe(first(action => action.type === fromStore.HIDE_FIRST_CONTENT_LOAD))
+      .subscribe(action => {
+        const payload = (action as fromStore.HideFirstContentLoad).payload;
+        const changes: any = {};
+        if (payload.showError) {
+          changes.emptyTemplate = 'firstLoadError';
+
+          if (payload.noInternet === true) {
+            changes.firstLoadErrorType = 'noInternet';
+          } else {
+            changes.firstLoadErrorType = 'somethingWrong';
+          }
+        } else {
+          changes.emptyTemplate = null;
+          changes.firstLoadErrorType = null;
+        }
+        this.triggerStateChange(changes);
+      });
+  }
+}

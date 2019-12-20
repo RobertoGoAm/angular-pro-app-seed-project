@@ -1,0 +1,623 @@
+;;; init.el --- Load the full configuration -*- lexical-binding: t -*-
+;;; Commentary:
+;;;   Configuracion de RGA
+;;;
+;;; Code:
+;; Produce backtraces when errors occur: can be helpful to diagnose startup issues
+;; (setq debug-on-error t)
+
+
+;; / / __ Package Source __ / /
+
+;;; Package configs
+(require 'package)
+(setq package-enable-at-startup nil)
+(setq package-archives '(("org"   . "http://orgmode.org/elpa/")
+                         ("gnu"   . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
+(package-initialize)
+
+
+;; / / __ General __ / /
+
+;;;; Resize Emacs properly
+(setq frame-resize-pixelwise t)
+
+;;;; Keep command history
+(savehist-mode 1)
+(setq savehist-file "~/.emacs.d/tmp/savehist")
+
+;;; Both command keys are 'Super'
+(setq mac-right-command-modifier 'super)
+(setq mac-command-modifier 'super)
+
+;;; Disable auto-save
+(setq auto-save-default nil)
+
+;;; Disable error bell
+(setq ring-bell-function 'ignore)
+
+;;; Make the yes or no prompts shorter.
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;;; Move filename# files
+(setq backup-directory-alist '((".*" . "~/.emacs.d/backup"))
+  backup-by-copying t    ; Don't delink hardlinks
+  version-control t      ; Use version numbers on backups
+  delete-old-versions t  ; Automatically delete excess backups
+  kept-new-versions 20   ; how many of the newest versions to keep
+  kept-old-versions 5    ; and how many of the old
+  )
+
+;;; Delete trailing whitespace on save
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(setq require-final-newline t)
+
+;;; Insert spaces on using tab
+(setq-default indent-tabs-mode nil)
+
+
+;; / / __ Appareance __ / /
+
+;;; No startup screen
+(setq inhibit-startup-screen t)
+
+;;; Smoother and nicer scrolling
+(setq scroll-margin 10
+   scroll-step 1
+   next-line-add-newlines nil
+   scroll-conservatively 10000
+   scroll-preserve-screen-position 1)
+
+;;; Font settings
+(set-frame-font "DroidSansMono Nerd Font 18")
+
+;;; Theme
+(use-package base16-theme
+  :ensure t
+  :config
+  (setq base16-distinct-fringe-background nil)
+  (load-theme 'base16-material-palenight t))
+
+;;; Minimal UI
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(menu-bar-mode -1)
+(set-face-attribute 'fringe nil :background nil)
+
+;;; Fancy titlebar for MacOS
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+(setq ns-use-proxy-icon  nil)
+(setq frame-title-format nil)
+
+;;; Line Number
+(global-linum-mode t)
+(setq linum-format "%4d  ")
+
+;;; Line height
+(defun set-bigger-spacing ()
+  (setq-local default-text-properties '(line-spacing 0.25 line-height 0.5)))
+(add-hook 'text-mode-hook 'set-bigger-spacing)
+(add-hook 'prog-mode-hook 'set-bigger-spacing)
+
+;;; git gutter highlight
+(global-diff-hl-mode)
+
+;;; Dont wrap lines
+(set-default 'truncate-lines t)
+
+;; Show full path in the title bar.
+(setq-default frame-title-format "%b (%f)")
+
+;; / / __ Keybinds __ / /
+
+;;; Custom keybinding
+(use-package general
+  :ensure t)
+
+;;;; SPC binds
+(general-define-key
+:states '(normal visual insert emacs)
+:prefix "SPC"
+:non-normal-prefix "M-SPC"
+
+;;;; Misc
+"TAB" '(switch-to-prev-buffer :which-key "Previous buffer")
+"SPC" '(helm-M-x :which-key "M-x")
+";" '(evil-commentary :which-key "Toggle comment")
+"ESC" '(which-key-abort :which-key "Abort")
+
+"=" '(:ignore t :which-key "Personal")
+"=f" '(:ignore t :which-key "Finanzas")
+"=fe" '(find-beancount-file :which-key "Open beancount file")'
+
+;;;; Buffers
+"b" '(:ignore t :which-key "Buffer")
+"bb" '(helm-buffers-list :which-key "List")
+"bd" '(kill-this-buffer :which-key "Destroy")
+"b ESC" '(which-key-abort :which-key "Abort")
+
+;;;; File
+"f" '(:ignore t :which-key "File")
+"ff" '(helm-find-files :which-key "Find files")
+"fs" '(save-buffer :which-key "Save")
+"ft" '(neotree-toggle :which-key "Toggle NeoTree")
+"f ESC" '(which-key-abort :which-key "Abort")
+;;;;; Emacs
+"fe" '(:ignore t :which-key "Emacs")
+"fed" '(find-dotfile :which-key "Edit init.el")
+"fer" '(reload-init-file :which-key "Reload init.el")
+"f e ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Git
+"g" '(:ignore t :which-key "Git")
+"gb" '(magit-blame :which-key "Blame")
+"gB" '(magit-branch-checkout :which-key "Branch and checkout")
+"gc" '(magit-checkout :which-key "Checkout")
+"gfh" '(magit-log-buffer-file :which-key "File commit history")
+"gm" '(magit-dispatch-popup :which-key "Dispatch")
+"gn" '(diff-hl-next-hunk :which-key "Next change in buffer")
+"gp" '(diff-hl-previous-hunk :which-key "Previous change in buffer")
+"gP" '(magit-push :which-key "Push")
+"gs" '(magit-status :which-key "Status")
+"gS" '(magit-stage-file :which-key "Stage file")
+"gU" '(magit-unstage-file :which-key "Stage file")
+"g ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Insert
+"i" '(:ignore t :which-key "Insert")
+"is" '(helm-yas-complete :which-key "Snippet")
+"i ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Jump
+"j" '(:ignore t :which-key "Jump")
+"jc" '(avy-goto-char :which-key "Jump to char")
+"jw" '(avy-goto-word-1 :which-key "Jump to word")
+"j ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Project
+"p" '(:ignore t :which-key "Project")
+"pf" '(helm-projectile-find-file :which-key "Find files")
+"pp" '(helm-projectile-switch-project :which-key "Switch")
+"ps" '(helm-projectile-ag :which-key "Search")
+"pr" '(projectile-replace :which-key "Replace")
+"p ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Quit
+"q" '(:ignore t :which-key "Quit")
+"qq" '(evil-quit :which-key "Quit emacs")
+"q ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Window
+"w" '(:ignore t :which-key "Window")
+"wl" '(windmove-right :which-key "Move right")
+"wh" '(windmove-left :which-key "Move left")
+"wk" '(windmove-up :which-key "Move up")
+"wj" '(windmove-down :which-key "Move bottom")
+"w/" '(split-window-right :which-key "Split right")
+"w-" '(split-window-below :which-key "Split bottom")
+"wq" '(delete-window :which-key "Delete window")
+"w ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Others
+"'" '(ansi-term :which-key "Open terminal"))
+
+;;; Typescript
+(general-define-key
+:keymap 'typescript-mode-map
+:states 'normal
+:prefix ","
+
+;;;; Build
+"b" '(:ignore t :which-key "Build")
+"bi" '(build-ios :which-key "Build iOS")
+"ba" '(build-android :which-key "Build Android")
+"b ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Fix
+"f" '(tide-fix :which-key "Fix issue")
+
+;;;; Navigation
+"g" '(:ignore t :which-key "Go to")
+"gb" '(tide-jump-back :which-key "Back")
+"gd" '(tide-jump-to-definition :which-key "Definition")
+"gi" '(tide-jump-to-implementation :which-key "Implementation")
+"gr" '(tide-references :which-key "References")
+"g ESC" '(which-key-abort :which-key "Abort")
+
+;;;; Serve
+"s" '(:ignore t :which-key "Serve")
+"ss" '(ng-serve :which-key "Serve default")
+"s2" '(ng-serve-dev2 :which-key "Serve Dev2"))
+"s ESC" '(which-key-abort :which-key "Abort")
+
+
+;; / / __ Plugin Config __ / /
+
+;;; Bootstrap `use-package`
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+
+;;; Editorconfig
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
+;;; Vim mode
+(setq evil-want-keybinding nil)
+(use-package evil
+  :ensure t
+  :config
+  ;;;; Vinegar-like bindings
+  (define-key evil-normal-state-map "-" 'dired-jump)
+  (evil-mode 1))
+
+;;; Vim mode binds
+(use-package evil-collection
+  :ensure t
+  :config
+  (evil-collection-init '(tide magit dired)))
+
+;;; Helm
+(use-package helm
+  :ensure t
+  :init
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-completion-in-region-fuzzy-match t)
+
+;;; Which Key
+(use-package which-key
+  :ensure t
+  :init
+  (setq which-key-separator " ")
+  (setq which-key-prefix-prefix "+")
+  :config
+  (which-key-mode)) (setq helm-candidate-number-list 50))
+
+;;; Doom modeline
+(use-package doom-modeline
+   :ensure t
+  :init (setq
+         doom-modeline-bar-width 5
+         doom-modeline-buffer-file-name-style 'file-name
+         doom-modeline-vcs-max-length 12)
+  :hook (after-init . doom-modeline-mode))
+
+;; Set the company completion vocabulary to css and html when in web-mode.
+(defun my-web-mode-hook ()
+  (set (make-local-variable 'company-backends) '(company-css company-web-html company-yasnippet company-files)))
+
+;;; Flycheck
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+;;; Company
+(use-package company
+  :ensure t
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+(setq company-idle-delay 0.1)
+(setq company-minimum-prefix-length 1)
+(setq company-dabbrev-downcase nil)
+(setq company-selection-wrap-around t)
+(company-tng-configure-default)
+
+;;; Avy
+(use-package avy
+  :ensure t)
+
+;;; NeoTree
+(use-package neotree
+  :ensure t)
+(setq neo-smart-open t)
+
+;;; Smartparens
+(use-package smartparens
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'smartparens-mode))
+
+;;; Rainbow-delimiters
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+
+;;; rainbow-mode
+(use-package rainbow-mode
+  :ensure t
+  :config
+  (setq rainbow-x-colors nil)
+  (add-hook 'prog-mode-hook 'rainbow-mode))
+
+;;; aggresive-indent
+(use-package aggressive-indent
+  :ensure t)
+
+;;; Projectile
+(use-package projectile
+  :ensure t
+  :commands (projectile-find-file projectile-switch-project)
+  :init
+  (use-package helm-projectile
+    :ensure t)
+  :config
+  (projectile-mode))
+
+;;; Magit
+(use-package magit
+  :ensure t)
+(add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+
+;;; Prettier
+(use-package prettier-js
+  :ensure t
+  :config
+(add-hook 'js2-mode-hook 'prettier-js-mode)
+(add-hook 'typescript-mode-hook 'prettier-js-mode)
+(add-hook 'rjsx-mode-hook 'prettier-js-mode))
+
+;;; Web-mode
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'")
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-engines-alist
+        '(("django" . "focus/.*\\.html\\'")
+          ("ctemplate" . "realtimecrm/.*\\.html\\'")))
+  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.js?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.xml?\\'" . web-mode)))
+
+;;; diff-hl
+(use-package diff-hl
+  :ensure t)
+
+;;; Tide
+(use-package tide
+  :ensure t
+  :init
+  (add-hook 'js2-mode-hook #'setup-tide-mode)
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+  :config
+    (defun setup-tide-mode ()
+      (interactive)
+      (tide-setup)
+      (flycheck-mode +1)
+      (setq flycheck-check-syntax-automatically '(save new-line idle-change mode-enabled))
+      (setq flycheck-idle-change-delay 0.2)
+      (eldoc-mode +1)
+      (company-mode +1)))
+
+;;;; Get terminals path
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns x))
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+
+;;;; evil-commentary
+(use-package evil-commentary
+  :ensure t)
+(evil-commentary-mode)
+
+;;;; Editorconfig
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
+;;;; Evil bindings for magit
+(use-package evil-magit
+  :ensure t
+  :config)
+
+;;;; Yasnippet
+(use-package yasnippet
+  :ensure t)
+(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+
+;;;; Custom Beancount Company backend
+(use-package company-ledger
+  :load-path "~/.emacs.d/lisp/company-ledger.el"
+  :no-require t
+  :ensure company
+  :init
+  (with-eval-after-load 'company
+      (add-to-list 'company-backends 'company-ledger-backend)))
+
+;;;; Beancount
+(use-package beancount
+  :load-path "~/.emacs.d/lisp"
+  :ensure nil
+  :config (progn (add-hook 'beancount-mode-hook 'company-mode))
+  :mode
+  ("\\.beancount$" . beancount-mode))
+
+;;;; yas helm integration
+(use-package helm-c-yasnippet
+  :ensure t)
+(yas-global-mode 1)
+(yas-load-directory "~/.emacs.d/snippets")
+
+;;;; Org
+(use-package org-bullets
+  :ensure t)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(use-package org-projectile
+  :bind (("C-c n p" . org-projectile-project-todo-completing-read)
+         ("C-c c" . org-capture))
+  :config
+  (progn
+    (setq org-projectile-projects-file "~/.emacs.d/projects.org")
+    (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
+    (push (org-projectile-project-todo-entry) org-capture-templates))
+  :ensure t)
+
+;;;; Evil binds for org mode
+(use-package evil-org
+  :ensure t
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda ()
+              (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+
+;;;; evil-surround
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
+;;;; Golden Ratio
+(use-package golden-ratio
+  :ensure t
+  :diminish golden-ratio-mode
+  :init
+  (golden-ratio-mode 1)
+  (setq golden-ratio-auto-scale t)
+  :config
+  (setq golden-ratio-extra-commands
+        (append golden-ratio-extra-commands
+                '(evil-window-left
+                  evil-window-right
+                  evil-window-up
+                  evil-window-down))))
+
+;;;; VUE Mode
+(use-package vue-mode
+  :ensure t)
+
+;;;; PHP Mode
+(use-package php-mode
+ :ensure t
+ :mode
+ ("\\.php\\'" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
+
+;;;; PHP Unit
+(use-package phpunit
+ :ensure t)
+
+(provide 'lang-php)
+
+;;;; Multiple cursors. Similar to Sublime or VS Code.
+(use-package multiple-cursors
+  :config
+  (setq mc/always-run-for-all 1)
+  (global-set-key (kbd "s-d") 'mc/mark-next-like-this)        ;; Cmd+d select next occurrence of region
+  (global-set-key (kbd "s-D") 'mc/mark-all-dwim)              ;; Cmd+Shift+d select all occurrences
+  (global-set-key (kbd "M-s-d") 'mc/edit-beginnings-of-lines) ;; Alt+Cmd+d add cursor to each line in region
+  (define-key mc/keymap (kbd "<return>") nil))
+
+;;;; lsp
+(use-package lsp-mode
+ :config
+ (setq lsp-prefer-flymake nil)
+ :hook (php-mode . lsp)
+ :commands lsp)
+
+(use-package lsp-ui
+ :requires lsp-mode flycheck
+ :config
+ (setq lsp-ui-doc-enable t
+ lsp-ui-doc-use-childframe t
+ lsp-ui-doc-position 'top
+ lsp-ui-doc-include-signature t
+ lsp-ui-sideline-enable nil
+ lsp-ui-flycheck-enable t
+ lsp-ui-flycheck-list-position 'right
+ lsp-ui-flycheck-live-reporting t
+ lsp-ui-peek-enable t
+ lsp-ui-peek-list-width 60
+ lsp-ui-peek-peek-height 25
+ lsp-ui-sideline-enable nil)
+
+(add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+;;;; Company integration for lsp
+(use-package company-lsp
+ :commands company-lsp)
+
+
+;; / / __ Functions __ / /
+
+;;; Start server if not running
+(add-hook 'after-init-hook
+          (lambda ()
+            (require 'server)
+            (unless (server-running-p)
+              (server-start))))
+
+;;; Find Beancount file
+(defun find-beancount-file ()
+  (interactive)
+  (find-file-existing "~/finanzas.gpg"))
+
+;;; Find init.el
+(defun find-dotfile ()
+  (interactive)
+  (find-file-existing (concat user-emacs-directory "init.el")))
+
+;;; Reload init.el
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file))
+
+;;;; Ng Serve
+(defun ng-serve ()
+  (interactive)
+  (async-shell-command "ng serve"))
+
+;;;; Ng Serve Dev2
+(defun ng-serve-dev2 ()
+  (interactive)
+  (async-shell-command "ng serve --configuration Dev2"))
+
+;;;; Ng Serve
+(defun build-ios ()
+  (interactive)
+  (async-shell-command "ionic cordova build ios"))
+
+;;;; Ng Serve Dev2
+(defun build-android ()
+  (interactive)
+  (async-shell-command "ionic cordova buid android"))
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (vue-mode phpunit php-mode telega org-projectile org-bullets sublimity evil-surround evil-org beancount evil-magit helm-ag editorconfig exec-path-from-shell rainbow-delimiters smartparens neotree doom-modeline which-key use-package spaceline helm general evil base16-theme))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; End:
+;;; init.el ends here

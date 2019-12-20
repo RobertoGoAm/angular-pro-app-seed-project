@@ -1,0 +1,564 @@
+App component
+        type: Alert
+        reason: Refresh Core fails
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: Calls Refresh Core
+
+        type: Alert
+        reason: Profile Check fails
+        header: Oops!
+        message: Profile check failed
+        buttons:
+          Logout: logs user out
+          Retry: Calls Profile Check
+
+Absence reporting page
+        type: Alert
+        reason: Submitting absence report
+        header: Absence Reported
+        message: Your absence report has been sent.
+        buttons:
+          Close: Close modal and go back
+
+        type: Alert
+        reason: Absence has already been reported for the date
+        header: Oops!
+        message: An absence report has already been submitted for ${studentName} for the date selected.
+        buttons:
+          Close: Dismiss
+
+        type: Alert
+        reason: Unknown error on reporting absence
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: Try sending report again
+
+Change email page
+        type: Alert
+        reason: Unknown error on changing email
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: Try changing email again
+
+        type: Alert
+        reason: Incorrect password supplied
+        header: Incorrect password
+        message: Error from the server or Unknown error if the former is not available
+        buttons:
+          Close: Dismiss
+
+        type: Alert
+        reason: Changed email succesfully
+        header: Change Email
+        message: A verification email has been sent to your new email address. You must verify this email for the update to be completed.
+        buttons:
+          Ok: Dismiss
+
+Change Password
+        type: Alert
+        reason: Unknown error on changing password
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Ok: Dismiss
+          Retry: Try changing password again
+
+        type: Alert
+        reason: Incorrect password provided
+        header: Incorrect password
+        message: Error from the server or The current password you've entered is incorrect. Please try again.
+        buttons:
+          Close: Dismiss
+
+        type: Alert
+        reason: Changed password succesfully
+        header: Change Password
+        message: Your password has been changed.
+        buttons:
+          OK: Dismiss
+
+Channel (feed)
+        type: Alert
+        reason: Unknown error on setting item as done
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try setting item as done again
+
+Close account
+        type: Alert
+        reason: Unknown error on closing account
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try closing account again
+
+        type: Alert
+        reason: Validation error
+        header: Incorrect password or error
+        message: Error from the server or The password you've entered is incorrect. Please try again.
+        buttons:
+          Close: Dismiss
+
+        type: Alert
+        reason: Succesfully closed the account
+        header: Close Account
+        message: Your account has been closed.
+        buttons:
+          OK: Logout
+
+Create account email
+        type: Alert
+        reason: duplicated email provided
+        header: Oops!
+        message: The email you've entered is already registered.<br><br>Try logging in with this email instead.
+        buttons:
+          Cancel: Dismiss
+          Log in: take the user to the sign in page
+
+        type: Loading
+        reason: checking the users email asynchronously
+        message: Check your email...
+
+Create account name
+        type: Loading
+        reason: creating user profile asynchronously
+        message: Creating your profile...
+
+Create account password
+        type: Loading
+        reason: creating user account asynchronously
+        message: Creating your account...
+
+        type: Alert
+        reason: Invalid password supplied
+        header: Oops!
+        message: Passwords must contain at least 8 characters.
+        buttons:
+          Ok: Dismiss
+
+Done (feed)
+        type: Alert
+        reason: Unknown error on setting item as done
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try setting item as done again
+
+        type: Toast
+        reason: Succesfully moved item to todo feed
+        message: Message moved to The Hub
+        duration: 3000
+        position: top
+
+Edit profile
+        type: Alert
+        reason: Unknown error on editing profile
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try editing profile again
+
+        type: Alert
+        header: My Account
+        message: Your profile has been updated.
+        buttons:
+          OK: Dismiss
+
+First onboarding choice (no school or channels page)
+        type: Alert
+        reason: Pressed the link that says i have neither...
+        header: I have neither
+        message: To use Parent Hub you'll need a School Handle from your child's school or a Channel Code from one of their teachers. You should contact the school directly to ask for one of these.
+        buttons:
+          OK: Dismiss
+          Logout: logs the user out
+
+Fogotten password
+        type: Loading
+        reason: requesting password reset asynchronously
+        message: Requesting password reset...
+
+        type: Alert
+        reason: Unknown error on requesting password reset
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try requesting password reset again
+
+        type: Alert
+        reason: Succesfully requested password reset
+        header: Password reset email sent.
+        message: Check your inbox and follow the steps in the email to reset your password.
+        buttons:
+          Ok: takes the user back to the sign in page
+
+Join school call page
+        type: Alert
+        reason: choosing to leave verification
+        header: Stop verification?
+        message:
+          <p>If you don't finish verification, you won't be able to see any information or updates that are specific to your children.</p>
+          <p>You can rejoin the process at any time, but in the meantime you'll be limited to seeing general updates sent by the school.</p>
+        buttons:
+          Cancel: Dismiss
+          OK: display loading popup while fetching channels and once they load navigate to channel picker. If it fails popup is dismissed
+
+        type: Loading
+        reason: Invoked on skippin verification
+        message: Fetching school channels...
+
+Join school channel picker
+        type: Alert
+        reason: tryin to skip channel picker
+        header: Skip channel subscription
+        message: You can choose to join additional Channels later, by selecting the School Channels option in the Schools tab
+        buttons:
+          Cancel: Dismiss
+          OK: navigate user to the hub
+
+Join school confirmation (confirm school)
+        type: Loading
+        reason: Invoked on skippin verification
+        message: Fetching school channels...
+
+Join school dob confirmation
+        type: Alert
+        reason: choosing to leave verification
+        header: Stop verification?
+        message:
+          <p>If you don't finish verification, you won't be able to see any information or updates that are specific to your children.</p>
+          <p>You can rejoin the process at any time, but in the meantime you'll be limited to seeing general updates sent by the school.</p>
+        buttons:
+          Cancel: Dismiss
+          OK: display loading popup while fetching channels and once they load navigate to channel picker. If it fails popup is dismissed
+
+        type: Loading
+        reason: Invoked on skippin verification
+        message: Fetching school channels...
+
+        type: Alert
+        reason: cancelled verification because date entered doesnt match school records
+        header: Verification Cancelled
+        message:
+          <p>Sorry, we've cancelled your verification because the date of birth you entered for your
+          child doesn't match the school's records.</p>
+          <p>Please contact the school before trying to verify again.</p>
+          <p>In the meantime, you'll be able to stay up to date with general updates from school by selecting
+          the Channels you want to follow.</p>
+        buttons:
+          OK: display loading popup while fetching channels and once they load navigate to channel picker. If it fails popup is dismissed
+
+        type: Alert
+        reason: too many bad attempts, wrong date format or bad date provided
+        header: No Match Found
+        message1: Sorry, you've entered an incorrect date too many times. <br/><br/>Please contact the school before trying again.
+        message2: Bad date format
+        message3:
+          <p>We couldn't find a match for the date of birth you've entered. Please try again.</p>
+          <p>You have errorObj.ErrorInfo.AttemptsRemaining attempts remaining.</p>
+          <p>If you have more than 1 child at the school, you can enter the date of birth of any one of them.</p>
+        buttons:
+          Ok: Dismiss
+
+Join school handle page
+        type: Alert
+        reason: Trying to subscribe again to an school
+        header: You're Already Subscribed
+        message: You're already a member of this school. Tap on the Schools tab at the bottom of the screen to view it
+        buttons:
+          Ok: Dismiss
+
+        type: Alert
+        reason: providing an incorrect handle
+        header: Oops!
+        message: School not found
+        buttons:
+          Ok: Dismiss
+
+Join school verification page
+        type: Alert
+        reason: clicked Im not a parent
+        header: Not a Parent?
+        message: You can stay up to date by selecting any Channels you'd like to follow, but you won't be able see any information about a specific student.
+        buttons:
+          Cancel: Dismiss
+          OK: display loading popup while fetching channels and once they load navigate to channel picker. If it fails popup is dismissed
+
+        type: Loading
+        reason: Invoked on skippin verification
+        message: Fetching school channels...
+
+        type: Alert
+        reason: invalid phone number provided
+        header: Oops!
+        message: Invalid mobile number
+        buttons:
+          Ok: Dismiss
+
+Join school verification confirmation page
+        type: Alert
+        reason: choosing to leave verification
+        header: Stop verification?
+        message:
+          <p>If you don't finish verification, you won't be able to see any information or updates that are specific to your children.</p>
+          <p>You can rejoin the process at any time, but in the meantime you'll be limited to seeing general updates sent by the school.</p>
+        buttons:
+          Cancel: Dismiss
+          OK: display loading popup while fetching channels and once they load navigate to channel picker. If it fails popup is dismissed
+
+        type: Loading
+        reason: Invoked on skippin verification
+        message: Fetching school channels...
+
+        type: Alert
+        reason: user asked for the sms code to be resent
+        header: Verification Code Resent
+        message:
+          <p>We've resent an SMS to you containing your verification code.</p>
+          <p>If the code doesn't arrive within 24hrs, please contact us on support@parenthub.co.uk.</p>
+        buttons:
+          Ok: Dismiss
+
+        type: Alert
+        reason: failure to request sms code to be resent because user reached code request limit
+        header: SMS Request Limit Reached
+        message:
+          <p>You've reached the limit on the number of SMS codes you can request
+          , so we've temporarily suspended your verification. Please wait an hour before trying again.</p>
+          <p>In the meantime, you won't be able to view any messages and information specific to your child
+          , but you will be able to see any general updates sent out by the school.</p>
+        buttons:
+          Ok: Dismiss
+
+        type: Alert
+        reason: error on submitting the wrong code or reaching attempt limit
+        header: Incorrect Code
+        message:
+                Sorry, you've entered an incorrect verification code too many times. <br/>
+                <br/>Please contact the school before trying again.
+                or
+                <p>The code you've entered doesn't match the one we've sent you.</p><p>Please try again. You have AttemptsRemaining attempts remaining.</p>
+        buttons:
+          Ok: Dismiss
+
+My channels page
+        type: Alert
+        reason: trying to leave a channel
+        header: Are You Sure?
+        message: Are you sure you want to leave the ${channel.name} channel? All of the messages in this channel will be removed.
+        buttons:
+          Cancel: Dismiss
+          Leave: Show leaving loading popup and try leaving the channel
+
+        type: Loading
+        reason: Leaving a channel asynchronously
+        message: Removing channel
+
+        type: Alert
+        reason: error when trying to leave the channel
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try leaving the channel again
+
+School Page
+        type: Loading
+        reason: leaving school
+        message: Removing school
+
+        type: Loading
+        reason: user trys to continue onboarding
+        message: Opening verification wizard...
+
+        type: Loading
+        reason: user taps edit channels
+        message: Fetching school channels...
+
+        type: Alert
+        reason: trying to edit subscribed channels or continue onboarding while offline
+        header: Check Connection
+        message: It looks like you're offline. Please check your wifi or mobile data connection and try again later.
+        buttons:
+          OK: Dismiss
+
+        type: Alert
+        reason: trying to leave school
+        header: Leave School
+        message: Are you sure you want to leave ${schoolDataModel.name}? You'll no longer receive messages from this school and any existing messages will be removed.
+        buttons:
+          Cancel: Dismiss
+          Leave: go through leaving the school
+
+        type: Alert
+        reason: something goes wrong trying to leave a school
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try leaving school again
+
+Schools page
+        type: Loading
+        reason: leaving school
+        message: Removing school
+
+        type: Loading
+        reason: user trys to continue onboarding
+        message: Opening verification wizard...
+
+        type: Loading
+        reason: user taps edit channels
+        message: Fetching school channels...
+
+        type: Alert
+        reason: trying to edit subscribed channels or continue onboarding while offline
+        header: Check Connection
+        message: It looks like you're offline. Please check your wifi or mobile data connection and try again later.
+        buttons:
+          OK: Dismiss
+
+        type: Alert
+        reason: trying to leave school
+        header: Leave School
+        message: Are you sure you want to leave ${schoolDataModel.name}? You'll no longer receive messages from this school and any existing messages will be removed.
+        buttons:
+          Cancel: Dismiss
+          Leave: go through leaving the school
+
+        type: Alert
+        reason: something goes wrong trying to leave a school
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try leaving school again
+
+Search Page
+        type: Alert
+        reason: Something went wrong while toggling item done state
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try toggling again
+
+Settings Page
+        type: Alert
+        reason: confirmation before clearing attachments
+        header: Remove Attachments
+        message: This removes all of the file attachments that you've downloaded in the app, freeing up some storage space. <br/>Should you need to, you'll be able to re-download these files at any time
+        buttons:
+          Cancel: Dismiss
+          Confirm: dispatch action to clear attachments
+
+Sign in Page
+        type: Loading
+        reason: user is trying to sign in
+        message: Signing in...
+
+        type: Alert
+        reason: tried to sign in while offline
+        header: Check Internet Connection
+        message: <p>It looks like you are unable to sign in because your phone is not currently connecting to the internet.</p><p>Please check your wifi and mobile data connections before trying again.</p>
+        buttons:
+          OK: Dismiss
+
+        type: Alert
+        reason: tried to sign in with wrong credentials
+        header: Oops!
+        message: You've entered an incorrect email address or password. Please try again.
+        buttons:
+          OK: Dismiss
+
+        type: Alert
+        reason: unknown error prevents sign in (usually server maintenance but could be any error not covered by the prior alerts in the page)
+        header: Unable to Sign In
+        message: <p>We weren't able to sign you in this time.</p><p>Please try again.</p>
+        buttons:
+          OK: Dismiss
+
+Student Dms page
+        type: Alert
+        reason: Something went wrong while toggling item done state
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try toggling again
+
+Student timetable
+        type: Alert
+        reason: failing to update timetable
+        header: Couldn't Update Timetable
+        message: Sorry, we couldn't update the timetable just now and so the info might be out of date. Please try again later.
+        buttons:
+          Cancel: navigate back (probably dismisses the alert too)
+          Retry: try refreshing the table data again
+
+        type: Alert
+        reason: failing to get timetable data
+        header: Timetable Error
+        message: Sorry, we couldn't get your timetable info just now. Please try again later
+        buttons:
+          Cancel: navigate back (probably dismisses the alert too)
+          Retry: try refreshing the table data again
+
+Todo page
+        type: Alert
+        reason: Something went wrong while toggling item done state
+        header: Oops!
+        message: Something went wrong. Please try again or come back later
+        buttons:
+          Cancel: Dismiss
+          Retry: try toggling again
+
+        type: Toast
+        reason: Succesfully moved item to done feed
+        message: Message moved to Done
+        duration: 3000
+        position: top
+
+Calendar Service
+        type: Alert
+        reason: saving an event to the calendar
+        header: Add Event
+        message: Add this event to your calendar?
+        buttons:
+          Cancel: Dismiss and cancel the operation
+          Add: Create event and save to calendar
+
+Update service
+        type: Toast
+        reason: there is a new version of the browser app available
+        message: Update available
+        position: top
+        buttons:
+          Reload: has a refresh icon its at the end of the toast prompts a page refresh to get the latest version
+
+CoreEffects
+        type: Toast
+        reason: load items fails and test mode is activated
+        message: Something went wrong, please try again later
+        duration: 2000
+        position: top
+        color: Grey(?)
+
+        type: Toast
+        reason: load items fails, test mode is disabled and theres no internet
+        message: Please check your internet connection and try again later
+        duration: 2000
+        position: top
+        color: Red(?)

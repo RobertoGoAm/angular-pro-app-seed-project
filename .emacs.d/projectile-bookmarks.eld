@@ -1,0 +1,1 @@
+("~/Dev/parenthub/ph_parent/" "~/Dev/Laravel/laravel6/" "~/.emacs.d/elpa/mmm-mode-0.5.7/" "~/dotfiles/" "~/.emacs.d/elpa/telega-20191216.1511/")

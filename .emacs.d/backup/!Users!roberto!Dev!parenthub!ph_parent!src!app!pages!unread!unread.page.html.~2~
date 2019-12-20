@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-buttons slot="start">
+        <ion-button ionBackButton (click)="goToParent()">
+          <ion-icon src="/assets/icon/back-icon-dark.svg"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button type="button" [routerLink]="['./search']">
+        <ion-icon slot="icon-only" src="/assets/icon/search-icon.svg"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>Unread</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollEvents]="useScrollEvents" [ngClass]="contentClass">
+  <ng-container *ngIf="pageState$ | async; let pageState">
+    <ion-grid>
+      <ng-container *ngIf="pageState.items?.length > 0 && !pageState.emptyTemplate; else noItemTemplate">
+        <ng-container *ngTemplateOutlet="itemTemplate"></ng-container>
+      </ng-container>
+    </ion-grid>
+
+    <ng-template #itemTemplate>
+      <app-hub-item-list [items]="pageState.items" (selectItem)="showItem($event)" (selectStudent)="showStudent($event)"
+        (selectChannel)="showChannel($event)" (toggleItemDone)="toggleItemDone($event)" (itemRead)="itemRead($event)"
+        (openAttachment)="openAttachment($event)" (getThumb)="getThumb($event)" (saveCalendar)="saveCalendar($event)"
+        (shareItem)="shareItem($event)">
+      </app-hub-item-list>
+
+      <ion-infinite-scroll threshold="500px" (ionInfinite)="doInfinite($event)" [disabled]="!pageState.hasMoreItems">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ng-template>
+
+    <ng-template #noItemTemplate>
+      <div [ngSwitch]="pageState.emptyTemplate">
+        <div *ngSwitchCase="'firstLoadError'">
+          <ng-container *ngTemplateOutlet="errorTemplate"></ng-container>
+        </div>
+
+        <div *ngSwitchCase="'firstLoad'">
+          <ng-container *ngTemplateOutlet="loadingTemplate"></ng-container>
+        </div>
+
+        <div *ngSwitchDefault>
+          <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #errorTemplate>
+      <div class="errorRetryCont">
+        <div class="retryErrorCont">
+          <p *ngIf="pageState.firstLoadErrorType === 'noInternet'" class="retryErrorText">We weren't able to complete
+            the
+            check
+            for messages because it looks like you're offline. <br /><br /> Please check your wifi or mobile data
+            connection and try again later.</p>
+
+          <p *ngIf="pageState.firstLoadErrorType === 'somethingWrong'" class="retryErrorText">We weren't able to
+            complete
+            the
+            check for messages this time. <br /><br />Please try again later.</p>
+        </div>
+
+        <div class="retryButtonCont">
+          <ion-button shape="round" color="secondary" class="retryButton" (click)="retryFirstLoad()">Try again
+          </ion-button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #emptyTemplate>
+    </ng-template>
+
+    <ng-template #loadingTemplate>
+      <ion-grid class="loadingTemplateCont">
+        <ion-col>
+          <ion-row class="loadingTemplateSpinnerCont">
+            <ion-spinner color="primary" name="crescent"></ion-spinner>
+          </ion-row>
+
+          <ion-row class="loadingTemplateTextCont">
+            <p>Checking for unread messages...</p>
+          </ion-row>
+        </ion-col>
+      </ion-grid>
+    </ng-template>
+  </ng-container>
+</ion-content>

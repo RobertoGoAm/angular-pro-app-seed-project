@@ -1,0 +1,7 @@
+# -*- mode: text -*-
+# name: loading popup snippet
+# key: loadingM
+# --
+type: Loading
+reason: $1
+message: $2

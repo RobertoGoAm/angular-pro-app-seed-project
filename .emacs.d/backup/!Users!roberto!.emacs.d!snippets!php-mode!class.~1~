@@ -1,0 +1,7 @@
+# -*- mode: php -*-
+# name: Class
+# key: class
+# --
+class `(upcase (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))` {
+
+}

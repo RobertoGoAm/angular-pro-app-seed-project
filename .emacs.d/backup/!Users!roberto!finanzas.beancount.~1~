@@ -1,0 +1,356 @@
+;; -*- mode: org; mode: beancount; -*-
+;; My Beancountfile
+
+* Options                                               ; Beancount options
+
+option "title" "My Finances"
+option "operating_currency" "EUR"
+
+** Accounts                                             ; Open all the accounts you have
+
+1991-06-28 open Income:ES:Papa:Debt
+1991-06-28 open Income:ES:Mama:Debt
+1991-06-28 open Income:ES:Aguarras:Debt
+1991-06-28 open Income:ES:Mauje:Debt
+1991-06-28 open Income:ES:Parenthub:Debt
+2019-12-02 open Income:ES:XLM:Gifts
+2019-12-03 open Income:ES:Iban:Referals
+1991-06-28 open Income:ES:Purcharses:Return
+1991-06-28 open Expenses:ES:Purcharses:Clothes
+1991-06-28 open Expenses:ES:Purcharses:Apps
+1991-06-28 open Expenses:ES:Purcharses:Food
+1991-06-28 open Expenses:ES:Purcharses:Gym
+1991-06-28 open Expenses:ES:Purcharses:Misc
+1991-06-28 open Expenses:ES:Misc:Gifts
+1991-06-28 open Expenses:ES:Misc:LostDai DAI
+1991-06-28 open Expenses:ES:Misc:SeguroTarjetaEvo
+1991-06-28 open Expenses:ES:Travel:Train
+1991-06-28 open Expenses:ES:Travel:Bus
+1991-06-28 open Expenses:ES:Travel:Plane
+1991-06-28 open Expenses:ES:Travel:Hotel
+1991-06-28 open Expenses:ES:Travel:Food
+1991-06-28 open Expenses:ES:Travel:Gas
+1991-06-28 open Expenses:ES:Bills:Phone
+1991-06-28 open Expenses:ES:Bills:PhoneMama
+1991-06-28 open Expenses:ES:Work:Software
+1991-06-28 open Expenses:ES:Work:Hardware
+1991-06-28 open Expenses:ES:Bills:Orange
+1991-06-28 open Expenses:ES:Bills:Netflix
+1991-06-28 open Expenses:ES:Bills:Spotify
+1991-06-28 open Expenses:ES:Bills:Surfshark
+1991-06-28 open Expenses:ES:Bills:Amazon
+1991-06-28 open Expenses:ES:Bills:Gimnasio
+1991-06-28 open Expenses:ES:Bills:Gas
+1991-06-28 open Expenses:ES:Taxes:Autonomo
+1991-06-28 open Expenses:ES:Taxes:Gestor
+1991-06-28 open Income:ES:Taxes:IVADeducible
+1991-06-28 open Income:ES:Taxes:RetornoHacienda
+1991-06-28 open Expenses:ES:Fee:ATM
+1991-06-28 open Expenses:ES:Fee:Coinbase
+1991-06-28 open Assets:ES:Paypal:Balance
+1991-06-28 open Assets:Cash                             ; Dinero suelto
+2014-10-07 open Assets:ES:EVO:Cash                      ; Dinero en la cuenta de Evo Banco
+2014-10-07 open Assets:ES:EVO:Savings                   ; Dinero en la cuenta de ahorro de Evo Banco
+2014-10-07 open Liabilities:ES:EVO:Credit               ; Deuda en la tarjeta de Evo Banco
+2014-10-07 open Liabilities:ES:Papa:Cash                ; Pago de deudas a papa
+2014-10-07 open Liabilities:ES:Sara:Cash                ; Pago de deudas a sara
+2018-02-01 open Income:ES:Parenthub:Salary              ; Sueldo
+2019-11-01 open Expenses:ES:Bills:Rent                  ; Mi parte del alquiler
+2019-11-20 open Assets:ES:Crypto:BTC BTC                ; Bitcoin
+2019-11-20 open Assets:ES:Crypto:ETH ETH                ; Ethereum
+2019-11-20 open Assets:ES:Crypto:LTC LTC                ; Litecoin
+2019-11-20 open Assets:ES:Crypto:XLM XLM                ; Stellar
+2019-12-04 open Assets:ES:Crypto:HEX HEX                ; HEX
+2019-12-04 open Assets:ES:Crypto:ZRX ZRX                ; 0x
+2019-12-04 open Assets:ES:Crypto:BAT BAT                ; Basic Attention Token
+2019-12-04 open Assets:ES:Crypto:DAI DAI                ; Dai stable coin
+2019-12-04 open Assets:ES:Crypto:XRP XRP                ; Ripple
+2019-12-04 open Assets:ES:Crypto:XTZ XTZ                ; XTZ
+2019-12-03 open Assets:ES:Iban:Cash                     ; Dinero en la cuenta de Iban
+2019-12-03 open Assets:ES:Iban:Interest                 ; Intereses de la cuenta en Iban
+2019-12-02 open Equity:Opening-Balances
+
+
+** Opening Balances
+
+2019-12-02 * "Opening Balances"
+        Income:ES:Papa:Debt                8.00 EUR
+        Income:ES:Mama:Debt              140.99 EUR
+        Income:ES:Parenthub:Debt        2000.00 EUR
+        Assets:Cash                       35.00 EUR
+        ;Assets:ES:EVO:Cash              3057.41 EUR
+        Assets:ES:EVO:Cash              2815.32 EUR
+        Assets:ES:EVO:Savings            758.20 EUR
+        Liabilities:ES:EVO:Credit       -490.06 EUR
+        Equity:Opening-Balances
+
+* Taxes
+
+2019-11-04 * "Intereses devueltos por hacienda"
+        Assets:ES:EVO:Cash 0.15 EUR
+        Income:ES:Taxes:RetornoHacienda
+
+2019-11-29 * "Autonomo"
+        Expenses:ES:Taxes:Autonomo 195.58 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-02 * "Intereses devueltos por hacienda"
+        Assets:ES:EVO:Cash 0.10 EUR
+        Income:ES:Taxes:RetornoHacienda
+
+* Bills
+
+2019-11-04 * "Alquiler"
+        Expenses:ES:Bills:Rent 50.00 EUR
+        Income:ES:Papa:Debt 500.00 EUR
+        Income:ES:Mama:Debt 50.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-04 * "Gas octubre"
+        Expenses:ES:Bills:Gas 24.8794 EUR
+        Income:ES:Taxes:IVADeducible 19.5006 EUR
+        Income:ES:Mama:Debt 48.48 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-04 * "Luz octubre"
+        Income:ES:Mama:Debt 64.0695 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-04 * "IVA a Deducciones"
+        Income:ES:Taxes:IVADeducible 11.1195 EUR
+        Income:ES:Mama:Debt
+
+2019-11-05 * "Gimnasio Onyx"
+        Expenses:ES:Bills:Gimnasio 229.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-05 * "Factura Yoigo"
+        Income:ES:Taxes:IVADeducible 7.392 EUR
+        Expenses:ES:Bills:Phone 27.808 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-08 * "Pepephone Mama"
+        Expenses:ES:Bills:PhoneMama 6.241 EUR
+        Income:ES:Taxes:IVADeducible 1.659 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-22 * "Orange"
+        Expenses:ES:Bills:Orange 61.0925 EUR
+        Income:ES:Taxes:IVADeducible 19.4775 EUR
+        Income:ES:Papa:Debt 12.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-26 * "Luz"
+        Income:ES:Mama:Debt 38.2844 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-26 * "IVA a Deducciones"
+        Income:ES:Taxes:IVADeducible 6.6444 EUR
+        Income:ES:Mama:Debt
+
+2019-12-02 * "Alquiler"
+        Expenses:ES:Bills:Rent 50.00 EUR
+        Income:ES:Papa:Debt 500.00 EUR
+        Income:ES:Mama:Debt 50.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-04 * "Factura Yoigo"
+        Income:ES:Taxes:IVADeducible 7.392 EUR
+        Expenses:ES:Bills:Phone 27.808 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-05 * "Gimnasio Onyx"
+        Expenses:ES:Bills:Gimnasio 229.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-05 * "Pepephone Mama"
+        Expenses:ES:Bills:PhoneMama 5.9566 EUR
+        Income:ES:Taxes:IVADeducible 1.5834 EUR
+        Assets:ES:EVO:Cash
+
+* Purcharses
+
+2019-10-29 * "Compra hilo dental, bloqueador de camara y mango hilo dental"
+        Expenses:ES:Purcharses:Misc 25.54 EUR
+        Assets:ES:EVO:Cash
+
+2019-10-30 * "Compra zapatillas nb"
+        Expenses:ES:Purcharses:Clothes 55.34 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-05 * "BetterTouchTool"
+        Expenses:ES:Purcharses:Apps 8.29 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-07 * "Compra el corte ingles"
+        Expenses:ES:Purcharses:Clothes 260.57 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-07 * "Compra teclado apple"
+        Expenses:ES:Work:Hardware 78.21 EUR
+        Income:ES:Taxes:IVADeducible 20.79 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-08 * "Viaje Murcia"
+        Expenses:ES:Travel:Gas 10.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-18 * "Viaje Valencia"
+        Expenses:ES:Travel:Gas 10.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-26 * "Compra el corte ingles"
+        Expenses:ES:Purcharses:Clothes 138.99 EUR
+        Expenses:ES:Purcharses:Clothes 50.00 EUR
+        Expenses:ES:Purcharses:Clothes 89.90 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-03 * "Batido de proteinas"
+        Expenses:ES:Purcharses:Gym 0.84 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-03 * "Regalo Mauje"
+        Income:ES:Taxes:IVADeducible 53.24 EUR
+        Expenses:ES:Misc:Gifts 50.00 EUR
+        Income:ES:Aguarras:Debt 50.00 EUR
+        Income:ES:Mauje:Debt 153.51 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-04 * "Arreglo pantalones y reloj"
+        Expenses:ES:Purcharses:Clothes 140 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-04 * "Pedido comida mejicana"
+        Expenses:ES:Purcharses:Food 18.50 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-04 * "Regalo Mauje luces Barba"
+        Expenses:ES:Misc:Gifts 17.17 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-10 * "Seguro tarjeta EVO"
+        Expenses:ES:Misc:SeguroTarjetaEvo 60.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-11 * "Regalos Navidad"
+        Expenses:ES:Misc:Gifts 69.00 EUR
+        Expenses:ES:Misc:Gifts 85.97 EUR
+        Assets:ES:EVO:Cash
+
+* Commodities
+
+2019-11-20 * "Compra de crypto"
+        Assets:ES:Crypto:BTC 0.00016536 BTC @ 7318.14 EUR
+        Assets:ES:Crypto:ETH 0.00930544 ETH @ 158.34 EUR
+        Assets:ES:Crypto:XLM 25.3850367 XLM @ 0.06 EUR
+        Assets:ES:Crypto:LTC 0.03022693 LTC @ 49.62 EUR
+        Expenses:ES:Fee:Coinbase 4.283486531 EUR
+        Liabilities:ES:EVO:Credit
+
+2019-11-21 * "Compra de crypto"
+        Assets:ES:Crypto:BTC 0.00028153 BTC @ 7135.94 EUR
+        Assets:ES:Crypto:ETH 0.01377937 ETH @ 154.69 EUR
+        Assets:ES:Crypto:XLM 38.6536708 XLM @ 0.05 EUR
+        Assets:ES:Crypto:LTC 0.04589836 LTC @ 47.27 EUR
+        Expenses:ES:Fee:Coinbase 1.747189049 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-28 * "Compra de crypto"
+        Assets:ES:Crypto:BTC 0.00030172 BTC @ 6812.00 EUR
+        Assets:ES:Crypto:ETH 0.01549265 ETH @ 135.35 EUR
+        Assets:ES:Crypto:XLM 40.5214266 XLM @ 0.052819 EUR
+        Assets:ES:Crypto:LTC 0.05023402 LTC @ 43.32 EUR
+        Expenses:ES:Fee:Coinbase 1.446403725 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-02 * "Regalo de XLM por registro DMC Wallet"
+        Assets:ES:Crypto:XLM 0.9999000 XLM
+        Income:ES:XLM:Gifts
+
+2019-12-03 * "Ingreso en Iban"
+        Assets:ES:Iban:Cash 1000.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-03 * "Regalo 25 euros por referal Iban"
+        Assets:ES:Iban:Cash 25.00 EUR
+        Income:ES:Iban:Referals
+
+2019-12-04 * "Compra de crypto"
+        Assets:ES:Crypto:BTC 0.00028222 BTC @ 6812.00 EUR
+        Assets:ES:Crypto:ETH 0.01738105 ETH @ 131.63 EUR
+        Assets:ES:Crypto:ZRX 11.09741302 ZRX @ 0.21 EUR
+        Assets:ES:Crypto:BAT 13.44004106 BAT @ 0.16 EUR
+        Expenses:ES:Fee:Coinbase 1.445549416 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-04 * "Pago de tasas para recibir HEX"
+        Assets:ES:Crypto:HEX 0.898 HEX @ 0.006340214 ETH
+        Assets:ES:Crypto:ETH
+
+2019-12-07 * "Conversion de LTC por otras monedas"
+        Assets:ES:Crypto:XRP 6.412547 XRP @ 0.00497694 LTC
+        Assets:ES:Crypto:DAI 1.42433459 DAI @ 0.022046063 LTC
+        Assets:ES:Crypto:XTZ 2.022077 XTZ @ 0.031177585 LTC
+        Assets:ES:Crypto:LTC
+
+2019-12-07 * "Conversion de XRP a ZRX"
+        Assets:ES:Crypto:ZRX 5.92228783 ZRX @ 1.082782057217236 XRP
+        Assets:ES:Crypto:XRP
+
+2019-12-07 * "Perdida de DAI"
+        Expenses:ES:Misc:LostDai 1.42433459 DAI
+        Assets:ES:Crypto:DAI
+
+2019-12-07 * "Conversion de XTZ a BAT"
+        Assets:ES:Crypto:BAT 14.50278548 BAT @ 0.139426802 XTZ
+        Assets:ES:Crypto:XTZ
+
+2019-12-07 * "Intereses semanales Iban"
+        Assets:ES:Iban:Cash 0.28
+        Assets:ES:Iban:Interest
+
+* Liabilities
+
+2019-11-04 * "Pago deuda papa"
+        Liabilities:ES:Papa:Cash 20.00 EUR
+        Income:ES:Papa:Debt
+
+2019-11-05 * "Pago mensualidad tarjeta"
+        Liabilities:ES:EVO:Credit 30.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-04 * "Pago mensualidad tarjeta"
+        Liabilities:ES:EVO:Credit 33.36 EUR
+        Assets:ES:EVO:Cash
+
+2019-12-10 * "Pago deuda(?) sara"
+        Liabilities:ES:Sara:Cash 12.00 EUR
+        Assets:ES:EVO:Cash
+
+* Income
+
+2019-11-05 * "Prestamo mama 25 euros"
+        Income:ES:Mama:Debt 25.00 EUR
+        Assets:ES:EVO:Cash
+
+2019-11-26 * "Devolucion ropa corte ingles"
+        Assets:ES:EVO:Cash 143.27 EUR
+        Assets:ES:EVO:Cash 29.00 EUR
+        Income:ES:Purcharses:Return
+
+2019-11-28 * "Parenthub"
+        Assets:ES:EVO:Cash 1870.00 EUR
+        Income:ES:Parenthub:Salary
+
+2019-12-02 * "Cobro deuda papa alquiler"
+        Assets:ES:EVO:Cash 500.00 EUR
+        Income:ES:Papa:Debt
+
+2019-12-04 * "Cobro deuda Aguarras regalo Mauje"
+        Assets:Cash 50.00 EUR
+        Income:ES:Aguarras:Debt
+
+2019-12-04 * "Cobro deuda mama"
+        Assets:ES:EVO:Cash 300.00 EUR
+        Income:ES:Mama:Debt
+
