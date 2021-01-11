@@ -5,6 +5,7 @@ import { Routes, RouterModule } from "@angular/router";
 import { Store } from "store";
 
 // feature modules
+import { AuthModule } from "src/auth/auth.module";
 
 // containers
 import { AppComponent } from "./containers/app/app.component";
@@ -15,7 +16,7 @@ import { AppComponent } from "./containers/app/app.component";
 export const ROUTES: Routes = [];
 
 @NgModule({
-  imports: [BrowserModule, RouterModule.forRoot(ROUTES)],
+  imports: [BrowserModule, RouterModule.forRoot(ROUTES), AuthModule],
   declarations: [AppComponent],
   providers: [Store],
   bootstrap: [AppComponent]
