@@ -60,7 +60,7 @@ import { Meal } from "../../../shared/services/meals/meals.service";
           </div>
         </div>
 
-        <div class="meal-form__submit" *ngIf="exists">
+        <div class="meal-form__submit">
           <div>
             <button
               *ngIf="!exists"
@@ -83,7 +83,7 @@ import { Meal } from "../../../shared/services/meals/meals.service";
             <a class="button button--cancel" [routerLink]="['../']">Cancel</a>
           </div>
 
-          <div class="meal-form__delete">
+          <div class="meal-form__delete" *ngIf="exists">
             <div *ngIf="toggled">
               <p>Delete item?</p>
               <button class="confirm" type="button" (click)="removeItem()">
