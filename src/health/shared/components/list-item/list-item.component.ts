@@ -16,10 +16,16 @@ import {
         <p class="list-item__name">{{ item.name }}</p>
 
         <p class="list-item__ingredients">
-          <span>
-            {{ item.ingredients }}
+          <span *ngIf="item.ingredient; else showWorkouts">
+            {{ item.ingredients | join }}
           </span>
         </p>
+
+        <ng-template #showWorkouts>
+          <span>
+            {{ item | workout }}
+          </span>
+        </ng-template>
       </a>
 
       <div class="list-item__delete" *ngIf="toggled">
@@ -53,6 +59,6 @@ export class ListItemComponent {
   }
 
   getRoute(item: any) {
-    return [`../meals`, item.$key];
+    return [`../${item.ingredients ? "meals" : "workouts"}`, item.$key];
   }
 }
